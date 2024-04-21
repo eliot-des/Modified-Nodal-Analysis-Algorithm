@@ -6,7 +6,8 @@ The aim is to create a functional program capable of loading a netlist in the fo
 ### Under the hood of the algorithm
 
 The MNA Algorithm is quite well documented over different books/papers as the following ones :
-*Laurence W. Nagel - SPICE2: A computer program to simulate semiconductor circuits 
-*Lawrence T. Pillage, Ronald A. Rohrer, Chandramouli Visweswariah-  Electronic Ciruit And System Simulation Methods 
-*Stefan Jahn, Michael Margraf, Vincent Habchi, Raimund Jacob - QUCS Technical Papers
+
+- Laurence W. Nagel - SPICE2: A computer program to simulate semiconductor circuits 
+- Lawrence T. Pillage, Ronald A. Rohrer, Chandramouli Visweswariah-  Electronic Ciruit And System Simulation Methods 
+- Stefan Jahn, Michael Margraf, Vincent Habchi, Raimund Jacob - QUCS Technical Papers
 

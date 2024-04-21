@@ -28,11 +28,11 @@ are two main aspects to be considered when choosing algorithms for this purpose:
 speed. The MNA, has been proved to accomplish these tasks.
 MNA applied to a circuit with passive elements, independent current and voltage sources and
 active elements results in a matrix equation of the form:
-$$
-\mathbf{A}\cdot\mathbf{x} = \mathbf{b}
-$$
+
+$$\mathbf{A}\cdot\mathbf{x} = \mathbf{b}$$
+
 The circuit can be solved by a simple matrix manipulation:
-$$
-\mathbf{x} = \mathbf{A}^{-1}\mathbf{b}
-$$
+
+$$\mathbf{x} = \mathbf{A}^{-1}\mathbf{b}$$
+
 or **LU** decomposition for example. Though this may be difficult by hand, it is straightforward and so is easily done by computer

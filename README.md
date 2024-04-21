@@ -38,6 +38,6 @@ $$\mathbf{x} = \mathbf{A}^{-1}\mathbf{b}$$
 
 or **LU** decomposition for example. Though this may be difficult by hand, it is straightforward and so is easily done by computer
 
-## Prerequires
+## Prerequisites
 ---
-If you want to test this implementation, you will need to have the [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) librarie to perform matrix operations.
+If you want to test this implementation, you will need to have the [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) library to perform matrix operations.

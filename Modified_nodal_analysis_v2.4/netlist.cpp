@@ -154,3 +154,7 @@ unsigned Netlist::getNodeNbr() {
     }
     return nodes.size();
 }
+
+
+//Just for testing the git commands
+//Test 1

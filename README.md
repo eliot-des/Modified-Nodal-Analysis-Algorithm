@@ -18,6 +18,6 @@ it is necessary to formulate equations for circuits containing as many different
 elements as possible. There are various methods for equation formulation for a circuit. These
 are based on three types of equations found in circuit theory:
 
-• equations based on Kirchhoff’s voltage law (KVL)
-• equations based on Kirchhoff’s current law (KCL)
-• branch constitutive equations
+* equations based on Kirchhoff’s voltage law (KVL)
+* equations based on Kirchhoff’s current law (KCL)
+* branch constitutive equations

@@ -31,8 +31,8 @@ active elements results in a matrix equation (linear system) of the form:
 
 $$\mathbf{A}\cdot\mathbf{x} = \mathbf{b},$$
 
-where $\mathbf{A}$ is a square Matrix, and where $\mathbf{x}$ and $\mathbf{b}$ are 1D column vectors.
-The circuit can be solved by a simple matrix manipulation:
+where $\mathbf{A}$ is a square Matrix, and where $\mathbf{x}$ and $\mathbf{b}$ are 1D column vectors (the way that both matrix and vectors are filled is really well documented in both 3 books that are referenced just above).
+The circuit can therefore be solved by a simple matrix manipulation:
 
 $$\mathbf{x} = \mathbf{A}^{-1}\mathbf{b}$$
 

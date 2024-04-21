@@ -27,10 +27,11 @@ simple, comprehensive manner. Once formulated, the system of equations has to be
 are two main aspects to be considered when choosing algorithms for this purpose: accuracy and
 speed. The MNA, has been proved to accomplish these tasks.
 MNA applied to a circuit with passive elements, independent current and voltage sources and
-active elements results in a matrix equation of the form:
+active elements results in a matrix equation (linear system) of the form:
 
-$$\mathbf{A}\cdot\mathbf{x} = \mathbf{b}$$
+$$\mathbf{A}\cdot\mathbf{x} = \mathbf{b},$$
 
+where $\mathbf{A}$ is a square Matrix, and where $\mathbf{x}$ and $\mathbf{b}$ are 1D column vectors.
 The circuit can be solved by a simple matrix manipulation:
 
 $$\mathbf{x} = \mathbf{A}^{-1}\mathbf{b}$$

@@ -19,8 +19,17 @@ void Resistance::stamp(Netlist& netlist) const {
 
 
 // ReactiveComponent class methods
+/*
+Reactive component are represented by there equivalent "companion model" in order to simulate their behavior
+in AC Transient Analysis. Here, both components (capacitor and inductances can be represenset by an equivalent 
+Thevenin generator, where the value of the voltage source and the value of the resistor depend on the numerical
+scheme (Euler Forward/Backward, Trapezoidal..) used to discretized the diffrencial equation representing 
+the behavior of each kind of component.
+Here the numerical scheme used for both component is the Trapezoidal scheme
+*/
 ReactiveComponent::ReactiveComponent(unsigned start_node, unsigned end_node, double value, unsigned index)
     : Component(start_node, end_node, value), index(index), resistance(0), voltage(0) {}
+
 
 void ReactiveComponent::stamp(Netlist& netlist) const {
     unsigned n = netlist.n;

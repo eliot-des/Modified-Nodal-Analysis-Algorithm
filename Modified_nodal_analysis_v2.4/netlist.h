@@ -18,6 +18,7 @@ class VoltageSource;
 class ExternalVoltageSource;
 class CurrentSource;
 class IdealOPA;
+class VoltageProbe;
 
 
 class Netlist {//: public std::enable_shared_from_this<Netlist> 
@@ -28,9 +29,11 @@ public:
     std::vector<std::shared_ptr<IdealOPA>> idealOPAs;
     std::vector<std::shared_ptr<VoltageSource>> voltageSources;
     std::vector<std::shared_ptr<CurrentSource>> currentSources;
+    std::vector<std::shared_ptr<VoltageProbe>> voltageProbes;
 
     Eigen::MatrixXd A;
     Eigen::VectorXd x, b;
+    Eigen::PartialPivLU<Eigen::MatrixXd> luDecomp;
 
     unsigned m; 
     unsigned n; // Number of unique nodes including the ground node (0)
@@ -41,8 +44,8 @@ public:
     
     // Public methods
     void init(const std::string& filename);         
-    Eigen::MatrixXd solve_system(double Ts);	
-    std::vector<double> update_system(unsigned start_node, unsigned end_node, const std::vector<double>& audio_sample, double Ts = 0.0);
+    void solve_system(double Ts);	
+    std::vector<double> update_system(const unsigned int v_Probe_idx, const std::vector<double>& audio_sample, const double Ts = 0.0);
 
 
     // Generic function to get components of a specific type

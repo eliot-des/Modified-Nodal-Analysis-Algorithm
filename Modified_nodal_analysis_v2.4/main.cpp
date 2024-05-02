@@ -29,7 +29,7 @@ int main() {
     std::vector<double> t   = temp.first;
     std::vector<double> Vin = temp.second;
 
-    std::vector<double> Vout = netlist.update_system(3, 0, Vin, Ts);
+    std::vector<double> Vout = netlist.update_system(0, Vin, Ts);
     std::ofstream outFile("C:/Users/eliot/OneDrive/Bureau/MNA Algorithm/Output_reader/Data_cpp.txt");
 
     /*

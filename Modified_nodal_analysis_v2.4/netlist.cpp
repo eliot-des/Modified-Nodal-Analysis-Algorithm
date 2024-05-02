@@ -8,6 +8,7 @@ Netlist::Netlist(const std::string& filename) {
 }
 
 void Netlist::init(const std::string& filename) {
+
     components = createComponentListFromTxt(filename);
 
     resistances        = getComponents<Resistance>();
@@ -15,7 +16,7 @@ void Netlist::init(const std::string& filename) {
     idealOPAs          = getComponents<IdealOPA>();
     voltageSources     = getComponents<VoltageSource>();
     currentSources     = getComponents<CurrentSource>();
-
+    voltageProbes	   = getComponents<VoltageProbe>();
 
     m = std::size(voltageSources) + std::size(reactiveComponents) + std::size(idealOPAs);
     n = getNodeNbr();       // Total number of unique nodes
@@ -31,16 +32,17 @@ void Netlist::init(const std::string& filename) {
 
 
 
-Eigen::MatrixXd Netlist::solve_system(double Ts) {
+void Netlist::solve_system(double Ts) {
     for (const auto& comp : reactiveComponents) comp->setResistance(Ts);
     for (const auto& comp : components) comp->stamp(*this);
-    return A.bottomRightCorner(m + n - 1, m + n - 1).inverse();
+    luDecomp.compute(A.bottomRightCorner(A.rows() - 1, A.cols() - 1));
 }
 
-std::vector<double> Netlist::update_system(unsigned start_node, unsigned end_node, const std::vector<double>& audio_sample, double Ts) {
+std::vector<double> Netlist::update_system(const unsigned int v_Probe_idx, const std::vector<double>& audio_sample, double Ts) {
     std::vector<double> output(audio_sample.size(), 0.0);
 
-    Eigen::MatrixXd inverseA = solve_system(Ts);
+    solve_system(Ts);
+
     std::cout << "A matrix:\n" << A << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -58,9 +60,14 @@ std::vector<double> Netlist::update_system(unsigned start_node, unsigned end_nod
             comp->stamp(*this);
         }
 
-        x.tail(x.size() - 1) = inverseA * b.tail(b.size() - 1);
+        x.tail(x.size() - 1) = luDecomp.solve(b.tail(b.size() - 1));
 
-        output[i] = x(start_node) - x(end_node);
+        //actualize the voltage value on the voltage probes
+        for (auto& voltageProbe : voltageProbes) {
+            voltageProbe->getVoltage(*this);
+        }
+
+        output[i] = voltageProbes[v_Probe_idx]->value;
     }
     auto stop = std::chrono::high_resolution_clock::now();
     auto time = std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();
@@ -95,6 +102,9 @@ std::shared_ptr<Component> Netlist::createComponent(const std::string& netlistLi
     case 'V':
         if (symbol[1] == 'i') {
             return std::make_shared<ExternalVoltageSource>(start_node, end_node, value, idx);
+        }
+        else if (symbol[1] == 'o') {
+            return std::make_shared<VoltageProbe>(start_node, end_node);
         }
         else {
             return std::make_shared<VoltageSource>(start_node, end_node, value, idx);

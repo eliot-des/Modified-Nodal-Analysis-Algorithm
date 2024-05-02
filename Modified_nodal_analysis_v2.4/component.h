@@ -80,3 +80,13 @@ public:
     IdealOPA(unsigned start_node, unsigned end_node, unsigned output_node, unsigned index);
     virtual void stamp(Netlist& netlist) const override;
 };
+
+class VoltageProbe : public Component {
+public:
+    VoltageProbe(unsigned start_node, unsigned end_node);
+    //define the stamp method as something that does nothing
+    virtual void stamp(Netlist& netlist) const override {};
+
+    //Method to update the voltage of the probe
+    void getVoltage(Netlist& netlist);
+};

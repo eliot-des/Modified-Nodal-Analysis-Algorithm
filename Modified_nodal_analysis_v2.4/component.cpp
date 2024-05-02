@@ -109,3 +109,10 @@ void IdealOPA::stamp(Netlist& netlist) const {
     netlist.A(n + index, start_node) = 1;
     netlist.A(n + index, end_node) = -1;
 }
+
+VoltageProbe::VoltageProbe(unsigned start_node, unsigned end_node)
+    : Component(start_node, end_node, 0.0) {}
+
+void VoltageProbe::getVoltage(Netlist& netlist) {
+    value = netlist.x(start_node) - netlist.x(end_node);
+}

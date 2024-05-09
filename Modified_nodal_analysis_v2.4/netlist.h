@@ -19,7 +19,7 @@ class ExternalVoltageSource;
 class CurrentSource;
 class IdealOPA;
 class VoltageProbe;
-
+class Diode;
 
 class Netlist {//: public std::enable_shared_from_this<Netlist> 
 public:
@@ -30,6 +30,7 @@ public:
     std::vector<std::shared_ptr<VoltageSource>> voltageSources;
     std::vector<std::shared_ptr<CurrentSource>> currentSources;
     std::vector<std::shared_ptr<VoltageProbe>> voltageProbes;
+    std::vector<std::shared_ptr<Diode>> diodes;
 
     Eigen::MatrixXd A;
     Eigen::VectorXd x, b;

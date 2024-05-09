@@ -45,6 +45,9 @@ std::vector<double> Netlist::update_system(const std::vector<double>& audio_samp
     std::cout << "A matrix:\n" << A << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
     
+    //the if condition is used to check if the circuit is linear or not
+    //Far from being optimal, because if we call this function multiple times, we will have to re-stamp the system each time
+    //and to check this condition each time
     if (diodes.size()==0){ // if the circuit is linear
         solve_system(Ts);
 

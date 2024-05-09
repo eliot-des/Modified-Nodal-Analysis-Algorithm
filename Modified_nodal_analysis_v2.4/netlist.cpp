@@ -17,6 +17,7 @@ void Netlist::init(const std::string& filename) {
     voltageSources     = getComponents<VoltageSource>();
     currentSources     = getComponents<CurrentSource>();
     voltageProbes	   = getComponents<VoltageProbe>();
+    diodes 		       = getComponents<Diode>();
 
     m = std::size(voltageSources) + std::size(reactiveComponents) + std::size(idealOPAs);
     n = getNodeNbr();       // Total number of unique nodes
@@ -118,10 +119,11 @@ std::shared_ptr<Component> Netlist::createComponent(const std::string& netlistLi
     case 'I':
         return std::make_shared<CurrentSource>(start_node, end_node, value);
     case 'O':
-        // value is      : the output node of the OPA
-        // start node is : the  + terminal of the OPA
-        // end node is   : the  - terminal of the OPA
         return std::make_shared<IdealOPA>(start_node, end_node, value, idx);
+    case 'D':
+        return std::make_shared<Diode>(start_node, end_node);
+    case '#':
+        return nullptr; // Comment line, return 'null
     default:
         throw std::runtime_error("Unknown component symbol: " + symbol);
     }

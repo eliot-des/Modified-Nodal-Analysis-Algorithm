@@ -17,18 +17,23 @@ int main() {
     Netlist netlist;        //declaration
     netlist.init("Netlist.txt"); //initialization
 
-    
+   
     int Fs = 48000;
     double Ts = 1.0 / Fs;
+    /*
     int Fstart = 10;
     int Fstop = 20000;
     float duration = 5.0;
-
     auto temp = myLinearchirp(Fstart, Fstop, duration, Fs);
+    */
+    int A = 2;
+    int F = 100;
+    float duration = 0.01;
+    auto temp = mySine(A, F, duration, Fs);
 
     std::vector<double> t   = temp.first;
     std::vector<double> Vin = temp.second;
-    std::vector<double> Vout = netlist.update_system(0, Vin, Ts);
+    std::vector<double> Vout = netlist.update_system(Vin, Ts, 0, 32);
 
     std::ofstream outFile("C:/Users/eliot/OneDrive/Bureau/MNA Algorithm/Output_reader/Data_cpp.txt");
 

@@ -26,6 +26,19 @@ void display_txt(const std::string filename) {
 //========================================================================
 
 
+std::pair<std::vector<double>, std::vector<double>> mySine(double A, double F, double duration, int Fs) {
+    int N = static_cast<int>(duration * Fs);
+    double T = static_cast<double>(N) / Fs;
+    std::vector<double> t(N), rx(N);
+
+    for (int i = 0; i < N; ++i) {
+        t[i] = i / static_cast<double>(Fs);
+        double phi = 2 * PI * F * t[i];
+        rx[i] = std::sin(phi);
+    }
+
+    return { t, rx };
+}
 
 std::pair<std::vector<double>, std::vector<double>> myLinearchirp(double Fstart, double Fstop, double duration, int Fs) {
     int N = static_cast<int>(duration * Fs);
@@ -43,3 +56,4 @@ std::pair<std::vector<double>, std::vector<double>> myLinearchirp(double Fstart,
 
     return { t, rx };
 }
+

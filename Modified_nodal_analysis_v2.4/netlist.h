@@ -46,7 +46,7 @@ public:
     // Public methods
     void init(const std::string& filename);         
     void solve_system(double Ts);	
-    std::vector<double> update_system(const unsigned int v_Probe_idx, const std::vector<double>& audio_sample, const double Ts = 0.0);
+    std::vector<double> update_system(const std::vector<double>& audio_sample, const double Ts, const unsigned int v_Probe_idx, const unsigned imax);
 
 
     // Generic function to get components of a specific type

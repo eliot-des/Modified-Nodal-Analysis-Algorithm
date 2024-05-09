@@ -39,37 +39,99 @@ void Netlist::solve_system(double Ts) {
     luDecomp.compute(A.bottomRightCorner(A.rows() - 1, A.cols() - 1));
 }
 
-std::vector<double> Netlist::update_system(const unsigned int v_Probe_idx, const std::vector<double>& audio_sample, double Ts) {
+std::vector<double> Netlist::update_system(const std::vector<double>& audio_sample, const double Ts, const unsigned int v_Probe_idx, const unsigned imax = 32) {
     std::vector<double> output(audio_sample.size(), 0.0);
-
-    solve_system(Ts);
 
     std::cout << "A matrix:\n" << A << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
+    
+    if (diodes.size()==0){ // if the circuit is linear
+        solve_system(Ts);
 
-    for (size_t i = 0; i < audio_sample.size(); ++i) {
-        for (auto& source : voltageSources) {
-            std::shared_ptr<ExternalVoltageSource> externalSource = std::dynamic_pointer_cast<ExternalVoltageSource>(source);
-            if (externalSource) {
-                externalSource->update(audio_sample[i]);
+        for (size_t i = 0; i < audio_sample.size(); ++i) {
+            for (auto& source : voltageSources) {
+                std::shared_ptr<ExternalVoltageSource> externalSource = std::dynamic_pointer_cast<ExternalVoltageSource>(source);
+                if (externalSource) {
+                    externalSource->update(audio_sample[i]);
+                }
+                source->stamp(*this);
             }
-            source->stamp(*this);
+
+            for (auto& comp : reactiveComponents) {
+                comp->updateVoltage(*this);
+                comp->stamp(*this);
+            }
+
+            x.tail(x.size() - 1) = luDecomp.solve(b.tail(b.size() - 1));
+
+            //actualize the voltage value on the voltage probes
+            for (auto& voltageProbe : voltageProbes) {
+                voltageProbe->getVoltage(*this);
+            }
+
+            output[i] = voltageProbes[v_Probe_idx]->value;
         }
-
-        for (auto& comp : reactiveComponents) {
-            comp->updateVoltage(*this);
-            comp->stamp(*this);
-        }
-
-        x.tail(x.size() - 1) = luDecomp.solve(b.tail(b.size() - 1));
-
-        //actualize the voltage value on the voltage probes
-        for (auto& voltageProbe : voltageProbes) {
-            voltageProbe->getVoltage(*this);
-        }
-
-        output[i] = voltageProbes[v_Probe_idx]->value;
     }
+    else { // if the circuit includes non-linear components such as diodes
+        for (auto& comp : reactiveComponents) {
+			comp->setResistance(Ts);
+		}
+
+        for (size_t i = 0; i < audio_sample.size(); ++i) {
+            for (auto& source : voltageSources) {
+				std::shared_ptr<ExternalVoltageSource> externalSource = std::dynamic_pointer_cast<ExternalVoltageSource>(source);
+                if (externalSource) {
+					externalSource->update(audio_sample[i]);
+				}
+			}
+
+            for (auto& comp : reactiveComponents) {
+				comp->updateVoltage(*this);
+			}
+
+            //Newton-Raphson method
+            for (unsigned k = 1; k < imax; k++) {
+                /*
+                Have to improve the way to update the values of the diodes,
+                since re - stamping the whole system at each iteration is not efficient.
+                In theory, we should just stamp the new values of the diodes in the A matrix and b vector.
+                Here, we are oblige to reset all the system, since the stamping operation
+                is done by a "+=" operation, and we can't just remove the contribution of the diodes
+                in the A matrix and b vector
+                */
+
+                A.setZero();
+                b.setZero();
+
+                for (auto& diode : diodes) {
+                    diode->update_voltage(*this);
+                    diode->update_Id(*this);
+                    diode->update_Geq(*this);
+                    diode->update_Ieq(*this);
+                }
+
+                for (auto& comp : components) {
+                    comp->stamp(*this);
+                }
+                luDecomp.compute(A.bottomRightCorner(A.rows() - 1, A.cols() - 1));
+
+                Eigen::VectorXd x_old = x;
+                x.tail(x.size() - 1) = luDecomp.solve(b.tail(b.size() - 1));
+
+                if ((x_old.tail(x_old.size() - 1) - x.tail(x.size() - 1)).norm() < 1e-6) {
+                    break;
+                }
+            }
+
+			//actualize the voltage value on the voltage probes
+            for (auto& voltageProbe : voltageProbes) {
+				voltageProbe->getVoltage(*this);
+			}   
+
+			output[i] = voltageProbes[v_Probe_idx]->value;
+		}
+	}   
+
     auto stop = std::chrono::high_resolution_clock::now();
     auto time = std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();
     std::cout << "Time: " << time << " us" << std::endl;

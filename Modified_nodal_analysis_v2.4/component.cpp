@@ -128,7 +128,7 @@ Diode::Diode(unsigned start_node, unsigned end_node)
     N = 1.6;	   //ideality factor
     Is = 2.6e-6;   //reverse saturation current
 
-    Vt = 0.025852;  //thermal voltage at approx. 300K 
+    Vt = 25.852e-3;  //thermal voltage at approx. 300K 
     N_Vt = N * Vt;  //N*Vt
 
     Id = 0;         //current through the diode
@@ -147,8 +147,8 @@ void Diode::stamp(Netlist& netlist) const {
     netlist.A(start_node,   end_node) -= Geq;
     netlist.A(end_node,   start_node) -= Geq;
 
-    netlist.b(start_node) -= Is;
-    netlist.b(end_node)   += Is;
+    netlist.b(start_node) -= Ieq;
+    netlist.b(end_node)   += Ieq;
 
 }
     
@@ -157,7 +157,7 @@ void Diode::update_voltage(Netlist& netlist) {
 }
 
 void Diode::update_Id(Netlist& netlist) {
-	Id = Is * std::expm1(voltage / N_Vt); //Id = Is * (std::exp(voltage / N_Vt) - 1);
+    Id = Is * std::expm1(voltage / N_Vt);
 }
 
 void Diode::update_Geq(Netlist& netlist) {
